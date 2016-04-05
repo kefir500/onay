@@ -1,8 +1,8 @@
 body {
 	width: 400px;
+	padding: 4px 16px;
 	background-color: #FDBD36;
 	font-family: "Open Sans", sans-serif;
-	padding: 4px 16px;
 }
 
 ::-webkit-scrollbar { width: 12px; }

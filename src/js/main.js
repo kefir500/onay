@@ -52,7 +52,7 @@ function get_balance(card) {
     if (xhr.readyState === 4) {
       if (xhr.status === 200) {
         var json = JSON.parse(JSON.parse(xhr.responseText).filecontent).result;
-        card.balance = json.balance / 100.0 || 'Ошибка';
+        card.balance = typeof(json.balance) !== 'undefined' ? json.balance / 100.0 : 'Ошибка';
         console.info(card.owner + ': ' + json.type);
         save_cards();
         save_datetime();

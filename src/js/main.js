@@ -12,18 +12,22 @@ function remove_card(id) {
 
 function update_view(status) {
   var table = document.getElementById('cards');
-  var row;
   if (table) {
-    while (table.firstChild) { table.removeChild(table.firstChild); }
+    while (table.firstChild) {
+      table.removeChild(table.firstChild);
+    }
     if (cards.length) {
       document.getElementById('header').style.display = 'none';
+      var row;
       for (var i = 0; i < cards.length; ++i) {
         var id_delete = 'btn-delete-' + i;
         row = table.insertRow(table.rows.length);
         row.insertCell(0).innerHTML = '<h2>' + cards[i].owner + '</h2><h2 class="text-muted">' + cards[i].number + '</h2><h5><a href="#" id="' + id_delete + '">Удалить</a></h5>';
         row.insertCell(1).innerHTML = '<h1>' + cards[i].balance + '</h1>';
         document.getElementById(id_delete).card_id = i;
-        document.getElementById(id_delete).addEventListener('click', function(e) { remove_card(e.target.card_id); }, false);
+        document.getElementById(id_delete).addEventListener('click', function(e) {
+          remove_card(e.target.card_id);
+        }, false);
       }
       if (sync) {
         status = status ? status + '<br>' : '';
@@ -32,8 +36,7 @@ function update_view(status) {
         cell.colSpan = 2;
         cell.innerHTML = status + 'Последняя синхронизация: <b>' + sync.date + ' &ndash; ' + sync.time + '</b>';
       }
-    }
-    else {
+    } else {
       loaded();
     }
   }
@@ -110,8 +113,7 @@ function load_settings() {
       for (var i = 0; i < cards.length; ++i) {
         get_balance(cards[i]);
       }
-    }
-    else {
+    } else {
       loaded();
     }
   });

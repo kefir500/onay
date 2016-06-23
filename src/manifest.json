@@ -4,7 +4,7 @@
   "manifest_version": 2,
   "permissions": [
     "storage",
-    "http://www.onay.kz/*",
+    "https://cabinet.onay.kz/",
     "http://fonts.googleapis.com/",
     "https://fonts.googleapis.com/"
   ],

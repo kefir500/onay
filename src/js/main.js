@@ -107,18 +107,19 @@ function save_datetime() {
 }
 
 function load_settings() {
+  chrome.storage.sync.get('sync', function(items) {
+    sync = items.sync;
+  });
   chrome.storage.sync.get('cards', function(items) {
     if (items.cards && items.cards.length) {
       cards = items.cards;
+      update_view('<b>Загрузка...</b>');
       for (var i = 0; i < cards.length; ++i) {
         get_balance(cards[i]);
       }
     } else {
       loaded();
     }
-  });
-  chrome.storage.sync.get('sync', function(items) {
-    sync = items.sync;
   });
 }
 

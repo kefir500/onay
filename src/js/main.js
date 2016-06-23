@@ -47,23 +47,39 @@ function loaded() {
 }
 
 function get_balance(card) {
-  var xhr = new XMLHttpRequest();
-  xhr.addEventListener('readystatechange', function () {
-    if (xhr.readyState === 4) {
-      if (xhr.status === 200) {
-        var json = JSON.parse(JSON.parse(xhr.responseText).filecontent).result;
-        card.balance = typeof(json.balance) !== 'undefined' ? json.balance / 100.0 : 'Ошибка';
-        console.info(card.owner + ': ' + json.type);
-        save_cards();
-        save_datetime();
-      }
-      else {
+  // Fetch CSRF:
+  var xhr_csrf = new XMLHttpRequest();
+  xhr_csrf.addEventListener('readystatechange', function () {
+    if (xhr_csrf.readyState === 4) {
+      if (xhr_csrf.status === 200) {
+        // Fetch card balance:
+        var response = new DOMParser().parseFromString(xhr_csrf.responseText, 'text/html');
+        var csrf = encodeURIComponent(response.getElementById('csrftoken').value);
+        var xhr_card = new XMLHttpRequest();
+        xhr_card.addEventListener('readystatechange', function () {
+          if (xhr_card.readyState === 4) {
+            if (xhr_card.status === 200) {
+              // TODO Handle "Too many requests" server response.
+              var json = JSON.parse(xhr_card.responseText).result;
+              card.balance = typeof(json.balance) !== 'undefined' ? json.balance / 100.0 : 'Ошибка';
+              console.info(card.owner + ': ' + json.type);
+              save_cards();
+              save_datetime();
+            } else {
+              update_view('<span class="error">Не удалось проверить баланс. Попробуйте позже.</span>');
+            }
+          }
+        });
+        xhr_card.open('POST', 'https://cabinet.onay.kz/check');
+        xhr_card.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr_card.send('pan=' + card.number + '&csrf=' + csrf);
+      } else {
         update_view('<span class="error">Не удалось проверить баланс. Попробуйте позже.</span>');
       }
     }
   });
-  xhr.open('POST', 'http://www.onay.kz/balance.json?pan=' + card.number);
-  xhr.send();
+  xhr_csrf.open('GET', 'https://cabinet.onay.kz');
+  xhr_csrf.send();
 }
 
 function save_cards() {

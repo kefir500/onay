@@ -62,7 +62,6 @@ function get_balance(card) {
         xhr_card.addEventListener('readystatechange', function () {
           if (xhr_card.readyState === 4) {
             if (xhr_card.status === 200) {
-              // TODO Handle "Too many requests" server response.
               var json = JSON.parse(xhr_card.responseText).result;
               card.balance = typeof(json.balance) !== 'undefined' ? json.balance / 100.0 : 'Ошибка';
               save_cards();

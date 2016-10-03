@@ -65,7 +65,6 @@ function get_balance(card) {
               // TODO Handle "Too many requests" server response.
               var json = JSON.parse(xhr_card.responseText).result;
               card.balance = typeof(json.balance) !== 'undefined' ? json.balance / 100.0 : 'Ошибка';
-              console.info(card.owner + ': ' + json.type);
               save_cards();
               save_datetime();
             } else {

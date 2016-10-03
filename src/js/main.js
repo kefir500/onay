@@ -80,6 +80,9 @@ function get_balance(card) {
       }
     }
   });
+  var xhr_logo = new XMLHttpRequest();
+  xhr_logo.open('GET', 'https://cabinet.onay.kz/content/img/SiteLogo.png');
+  xhr_logo.send();
   xhr_csrf.open('GET', 'https://cabinet.onay.kz');
   xhr_csrf.send();
 }

@@ -50,40 +50,54 @@ function loaded() {
 }
 
 function get_balance(card) {
-  // Fetch CSRF:
-  var xhr_csrf = new XMLHttpRequest();
-  xhr_csrf.addEventListener('readystatechange', function () {
-    if (xhr_csrf.readyState === 4) {
-      if (xhr_csrf.status === 200) {
-        // Fetch card balance:
-        var response = new DOMParser().parseFromString(xhr_csrf.responseText, 'text/html');
-        var csrf = encodeURIComponent(response.getElementById('csrftoken').value);
-        var xhr_card = new XMLHttpRequest();
-        xhr_card.addEventListener('readystatechange', function () {
-          if (xhr_card.readyState === 4) {
-            if (xhr_card.status === 200) {
-              var json = JSON.parse(xhr_card.responseText).result;
-              card.balance = typeof(json.balance) !== 'undefined' ? json.balance / 100.0 : 'Ошибка';
-              save_cards();
-              save_datetime();
-            } else {
-              update_view('<span class="error">Не удалось проверить баланс. Попробуйте позже.</span>');
-            }
-          }
-        });
-        xhr_card.open('POST', 'https://cabinet.onay.kz/check');
-        xhr_card.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr_card.send('pan=' + card.number + '&csrf=' + csrf);
-      } else {
-        update_view('<span class="error">Не удалось проверить баланс. Попробуйте позже.</span>');
+
+  function fetch_balance(csrf) {
+    var xhr_card = new XMLHttpRequest();
+    xhr_card.addEventListener('readystatechange', function () {
+      if (xhr_card.readyState === 4) {
+        if (xhr_card.status === 200) {
+          var json = JSON.parse(xhr_card.responseText).result;
+          card.balance = typeof(json.balance) !== 'undefined' ? json.balance / 100.0 : 'Ошибка';
+          save_cards();
+          save_datetime();
+        } else {
+          console.warn('Error fetching card balance.');
+          update_view('<span class="error">Не удалось проверить баланс. Попробуйте позже.</span>');
+        }
       }
-    }
-  });
-  var xhr_logo = new XMLHttpRequest();
-  xhr_logo.open('GET', 'https://cabinet.onay.kz/content/img/SiteLogo.png');
-  xhr_logo.send();
-  xhr_csrf.open('GET', 'https://cabinet.onay.kz');
-  xhr_csrf.send();
+    });
+    xhr_card.open('POST', 'https://cabinet.onay.kz/check');
+    xhr_card.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr_card.send('pan=' + card.number + '&csrf=' + csrf);
+  }
+
+  function fetch_csrf() {
+    var xhr_csrf = new XMLHttpRequest();
+    xhr_csrf.addEventListener('readystatechange', function () {
+      if (xhr_csrf.readyState === 4) {
+        if (xhr_csrf.status === 200) {
+          var response = new DOMParser().parseFromString(xhr_csrf.responseText, 'text/html');
+          var csrf = encodeURIComponent(response.getElementById('csrftoken').value);
+          fetch_balance(csrf);
+        } else {
+          console.warn('Error fetching CSRF token.');
+          update_view('<span class="error">Не удалось проверить баланс. Попробуйте позже.</span>');
+        }
+      }
+    });
+    xhr_csrf.open('GET', 'https://cabinet.onay.kz');
+    xhr_csrf.send();
+  }
+
+  function fetch_logo() {
+    // Simulate human behavior:
+    var xhr_logo = new XMLHttpRequest();
+    xhr_logo.open('GET', 'https://cabinet.onay.kz/content/img/SiteLogo.png');
+    xhr_logo.send();
+  }
+
+  fetch_logo();
+  fetch_csrf();
 }
 
 function save_cards() {

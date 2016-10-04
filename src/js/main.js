@@ -1,6 +1,7 @@
 function add_card(number, owner) {
   cards.push({ number: number, owner: owner, balance: '...' });
   save_cards();
+  update_view();
   get_balance(cards[cards.length - 1]);
   return true;
 }
@@ -8,6 +9,7 @@ function add_card(number, owner) {
 function remove_card(id) {
   cards.splice(id, 1);
   save_cards();
+  update_view();
 }
 
 function update_view(status) {
@@ -49,7 +51,21 @@ function loaded() {
   element = document.getElementById('header-loading'); if (element) { element.style.display = 'none'; }
 }
 
-function get_balance(card) {
+function simulate_human() {
+  return new Promise(function (resolve, reject) {
+    // Simulate human behavior:
+    var xhr_logo = new XMLHttpRequest();
+    xhr_logo.addEventListener('readystatechange', function () {
+      if (xhr_logo.readyState === 4) {
+        resolve(xhr_logo.response);
+      }
+    });
+    xhr_logo.open('GET', 'https://cabinet.onay.kz/content/img/SiteLogo.png');
+    xhr_logo.send();
+  });
+}
+
+function get_balance() {
 
   function fetch_csrf() {
     return new Promise(function (resolve, reject) {
@@ -70,7 +86,7 @@ function get_balance(card) {
     });
   }
 
-  function fetch_balance(csrf) {
+  function fetch_balance(pan, csrf) {
     return new Promise(function (resolve, reject) {
       var xhr_card = new XMLHttpRequest();
       xhr_card.addEventListener('readystatechange', function () {
@@ -89,42 +105,29 @@ function get_balance(card) {
       });
       xhr_card.open('POST', 'https://cabinet.onay.kz/check');
       xhr_card.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-      xhr_card.send('pan=' + card.number + '&csrf=' + csrf);
+      xhr_card.send('pan=' + pan + '&csrf=' + csrf);
     });
   }
 
-  function fetch_logo() {
-    return new Promise(function (resolve, reject) {
-      // Simulate human behavior:
-      var xhr_logo = new XMLHttpRequest();
-      xhr_logo.addEventListener('readystatechange', function () {
-        if (xhr_logo.readyState === 4) {
-          resolve(xhr_logo.response);
-        }
+  cards.forEach(function (card) {
+    fetch_csrf().then(function (csrf) {
+      return fetch_balance(card.number, csrf).then(function (balance) {
+        card.balance = balance;
+        save_cards(cards);
+        save_datetime();
+        update_view();
+        console.info(card.owner + ': ' + card.balance);
       });
-      xhr_logo.open('GET', 'https://cabinet.onay.kz/content/img/SiteLogo.png');
-      xhr_logo.send();
+    }).catch(function (error) {
+      card.balance = '<span class="error">' + card.balance + '</span>';
+      update_view('<span class="error">Не удалось проверить баланс. Попробуйте позже.</span>');
+      console.warn(card.owner + ': ' + error);
     });
-  }
-
-  fetch_logo().then(function () {
-    return fetch_csrf();
-  }).then(function (csrf) {
-    return fetch_balance(csrf)
-  }).then(function (balance) {
-    card.balance = balance;
-    save_cards();
-    save_datetime();
-  }).catch(function (error) {
-    card.balance = '<span class="error">' + card.balance + '</span>';
-    update_view('<span class="error">Не удалось проверить баланс. Попробуйте позже.</span>');
-    console.warn(error);
   });
 }
 
 function save_cards() {
   chrome.storage.sync.set({ cards: cards });
-  update_view();
 }
 
 function save_datetime() {
@@ -144,16 +147,16 @@ function save_datetime() {
 }
 
 function load_settings() {
-  chrome.storage.sync.get('sync', function(items) {
-    sync = items.sync;
+  chrome.storage.sync.get('sync', function(data) {
+    sync = data.sync;
   });
-  chrome.storage.sync.get('cards', function(items) {
-    if (items.cards && items.cards.length) {
-      cards = items.cards;
+  chrome.storage.sync.get('cards', function(data) {
+    if (data.cards && data.cards.length) {
+      cards = data.cards;
       update_view('<b>Загрузка...</b>');
-      for (var i = 0; i < cards.length; ++i) {
-        get_balance(cards[i]);
-      }
+      simulate_human().then(function () {
+        get_balance();
+      });
     } else {
       loaded();
     }

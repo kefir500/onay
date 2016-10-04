@@ -56,11 +56,11 @@ function simulate_human() {
     // Simulate human behavior:
     var xhr_logo = new XMLHttpRequest();
     xhr_logo.addEventListener('readystatechange', function () {
-      if (xhr_logo.readyState === 4) {
+      if (xhr_logo.readyState === 2) {
         resolve(xhr_logo.response);
       }
     });
-    xhr_logo.open('GET', 'https://cabinet.onay.kz/content/img/SiteLogo.png');
+    xhr_logo.open('HEAD', 'https://cabinet.onay.kz/content/img/SiteLogo.png');
     xhr_logo.send();
   });
 }

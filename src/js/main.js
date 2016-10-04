@@ -61,8 +61,7 @@ function get_balance(card) {
             var csrf = encodeURIComponent(response.getElementById('csrftoken').value);
             resolve(csrf);
           } else {
-            console.warn('Error fetching CSRF token: ' + xhr_card.status + ' ' + xhr_card.statusText);
-            reject(xhr_csrf.statusText);
+            reject('Error fetching CSRF token: ' + xhr_card.status + ' ' + xhr_card.statusText);
           }
         }
       });
@@ -78,11 +77,13 @@ function get_balance(card) {
         if (xhr_card.readyState === 4) {
           if (xhr_card.status === 200) {
             var json = JSON.parse(xhr_card.responseText).result;
-            var balance = typeof(json.balance) !== 'undefined' ? json.balance / 100.0 : 'Ошибка';
-            resolve(balance);
+            if (json.balance != null) {
+              resolve(json.balance / 100.0);
+            } else {
+              reject('Error fetching card balance: imporper JSON response');
+            }
           } else {
-            console.warn('Error fetching card balance: ' + xhr_card.status + ' ' + xhr_card.statusText);
-            reject(xhr_card.statusText);
+            reject('Error fetching card balance: ' + xhr_card.status + ' ' + xhr_card.statusText);
           }
         }
       });
@@ -114,8 +115,10 @@ function get_balance(card) {
     card.balance = balance;
     save_cards();
     save_datetime();
-  }).catch(function () {
+  }).catch(function (error) {
+    card.balance = '<span class="error">' + card.balance + '</span>';
     update_view('<span class="error">Не удалось проверить баланс. Попробуйте позже.</span>');
+    console.warn(error);
   });
 }
 

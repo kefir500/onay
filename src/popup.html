@@ -7,16 +7,35 @@
 	<link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
-	<div id="header">
-		<img src="img/onay.png">
-		<h2 id="header-loading">Загрузка...</h2>
-		<h4 id="header-help">Нажмите &laquo;Добавить&raquo;, чтобы добавить карту в список.<br>Вы можете добавлять неограниченное количество карт.</h4>
-		<hr>
+	<div id="page-main">
+		<div class="header">
+			<img src="img/onay.png">
+			<h4 id="help">Нажмите &laquo;Добавить&raquo;, чтобы добавить карту в список.<br>Вы можете добавлять неограниченное количество карт.</h4>
+			<hr>
+		</div>
+		<table id="cards"></table>
+		<div id="status">
+			<div id="status-text"></div>
+			<div id="status-date"></div>
+		</div>
+		<div class="footer">
+			<a class="btn" id="btn-page-add">Добавить</a>
+		</div>
 	</div>
-	<table id="cards"></table>
-	<div id="footer">
-		<a class="btn" href="add.html">Добавить</a>
+	<div id="page-add">
+		<div class="header">
+			<img src="img/onay.png">
+		</div>
+		<label for="input-card-number"><b>Номер карты</b> (19 цифр):</label><br>
+		<input id="input-card-number" placeholder="0000000000000000000"><br>
+		<label for="input-card-owner"><b>Владелец карты</b> (отображаемое имя):</label><br>
+		<input id="input-card-owner" placeholder="Иван Иванов"><br>
+		<div class="footer">
+			<a class="btn" id="btn-page-main">&laquo; Назад</a>
+			<a class="btn" id="btn-add">Добавить</a>
+		</div>
 	</div>
 	<script src="js/main.js"></script>
+	<script src="js/addpage.js"></script>
 </body>
 </html>

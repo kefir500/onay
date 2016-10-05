@@ -50,17 +50,16 @@ a.btn {
 a.btn:hover { background-color: #FFD877; }
 a.btn:active { background-color: #F5AA12; }
 
-table {
-	width: 100%;
-	border-spacing: 0;
-}
+#page-add { display: none; }
 
-table td { border-bottom: 1px solid rgba(0, 0, 0, 0.15); }
-table td:last-child { text-align: right; }
-table tr:last-child td { border-bottom: none; padding-top: 10px; text-align: left; }
+.header { text-align: right; }
+.footer { text-align: right; }
 
-.text-muted { color: rgba(0, 0, 0, 0.3); }
+table#cards { width: 100%; border-spacing: 0; }
+table#cards td { border-bottom: 1px solid rgba(0, 0, 0, 0.15); }
+table#cards td:last-child { text-align: right; }
+
+#status { display: none; padding-top: 10px; }
+
+.muted { color: rgba(0, 0, 0, 0.3); }
 .error { color: #F7512A; font-weight: bold; }
-
-#header { text-align: right; } #header-help { display: none; }
-#footer { text-align: right; }

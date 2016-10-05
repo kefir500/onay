@@ -1,71 +1,118 @@
-function add_card(number, owner) {
-  cards.push({ number: number, owner: owner, balance: '...' });
-  save_cards();
-  update_view();
-  get_balance(cards[cards.length - 1]);
-  return true;
-}
+// View:
 
-function remove_card(id) {
-  cards.splice(id, 1);
-  save_cards();
-  update_view();
-}
-
-function update_view(status) {
+function generateCardsView() {
   var table = document.getElementById('cards');
-  if (table) {
-    while (table.firstChild) {
-      table.removeChild(table.firstChild);
+  while (table.firstChild) {
+    table.removeChild(table.firstChild);
+  }
+  if (cards && cards.length) {
+    document.getElementById('help').style.display = 'none';
+    for (var i = 0; i < cards.length; ++i) {
+      var deleteID = 'btn-delete-' + i;
+      var row = table.insertRow(table.rows.length);
+      row.insertCell(0).innerHTML = '<h2>' + cards[i].owner + '</h2><h2 class="muted">' + cards[i].number + '</h2><h5><a href="#" id="' + deleteID + '">Удалить</a></h5>';
+      row.insertCell(1).innerHTML = '<h1 id="card-balance-' + cards[i].number + '">' + cards[i].balance + '</h1>';
+      document.getElementById(deleteID).cardID = i;
+      document.getElementById(deleteID).addEventListener('click', function (e) {
+        removeCard(e.target.cardID);
+      }, false);
     }
-    if (cards.length) {
-      document.getElementById('header').style.display = 'none';
-      var row;
-      for (var i = 0; i < cards.length; ++i) {
-        var id_delete = 'btn-delete-' + i;
-        row = table.insertRow(table.rows.length);
-        row.insertCell(0).innerHTML = '<h2>' + cards[i].owner + '</h2><h2 class="text-muted">' + cards[i].number + '</h2><h5><a href="#" id="' + id_delete + '">Удалить</a></h5>';
-        row.insertCell(1).innerHTML = '<h1>' + cards[i].balance + '</h1>';
-        document.getElementById(id_delete).card_id = i;
-        document.getElementById(id_delete).addEventListener('click', function(e) {
-          remove_card(e.target.card_id);
-        }, false);
-      }
-      if (sync) {
-        status = status ? status + '<br>' : '';
-        row = table.insertRow(table.rows.length);
-        var cell = row.insertCell(0);
-        cell.colSpan = 2;
-        cell.innerHTML = status + 'Последняя синхронизация: <b>' + sync.date + ' &ndash; ' + sync.time + '</b>';
-      }
-    } else {
-      loaded();
-    }
+  } else {
+    document.getElementById('help').style.display = 'block';
   }
 }
 
-function loaded() {
-  var element;
-  element = document.getElementById('header'); if (element) { element.style.display = 'block'; }
-  element = document.getElementById('header-help'); if (element) { element.style.display = 'block'; }
-  element = document.getElementById('header-loading'); if (element) { element.style.display = 'none'; }
+function viewCardBalance(card) {
+  var field = document.getElementById('card-balance-' + card.number);
+  if (field) {
+    field.innerHTML = card.balance;
+    return true;
+  } else {
+    return false;
+  }
 }
 
-function simulate_human() {
-  return new Promise(function (resolve, reject) {
-    // Simulate human behavior:
-    var xhr_logo = new XMLHttpRequest();
-    xhr_logo.addEventListener('readystatechange', function () {
-      if (xhr_logo.readyState === 2) {
-        resolve(xhr_logo.response);
-      }
-    });
-    xhr_logo.open('HEAD', 'https://cabinet.onay.kz/content/img/SiteLogo.png');
-    xhr_logo.send();
+function viewCardError(card) {
+  var field = document.getElementById('card-balance-' + card.number);
+  if (field) {
+    field.innerHTML = '<span class="error">' + card.balance + '</span>';
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function viewCardLoading(card) {
+  var field = document.getElementById('card-balance-' + card.number);
+  if (field) {
+    field.innerHTML = '...';
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function viewCardRemove(card) {
+  var field = document.getElementById('card-balance-' + card.number).parentNode;
+  if (field) {
+    field.parentNode.remove();
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function updateStatusText(message) {
+  if (message) {
+    document.getElementById('status').style.display = 'block';
+    document.getElementById('status-text').style.display = 'block';
+    document.getElementById('status-text').innerHTML = message;
+  } else {
+    document.getElementById('status-text').style.display = 'none';
+    document.getElementById('status-text').innerHTML = message;
+  }
+}
+
+function updateStatusDate(lastSync) {
+  document.getElementById('status').style.display = 'block';
+  document.getElementById('status-date').innerHTML = 'Последняя синхронизация: <b>' + lastSync.date + ' &ndash; ' + lastSync.time + '</b>';
+}
+
+// Cards:
+
+function addCard(number, owner) {
+  if (number != parseInt(number, 10)) {
+    console.warn('Invalid card format.');
+    return false;
+  }
+  cards.forEach(function (card) {
+    if (card.number === number) {
+      console.warn('Card ' + number + ' is already in the list');
+      return false;
+    }
   });
+  var card = {
+    number: number,
+    owner: owner,
+    balance: 0
+  }
+  cards.push(card);
+  saveCards();
+  getCardBalance(card);
+  return true;
 }
 
-function get_balance() {
+function removeCard(id) {
+  if (cards && cards.length > id) {
+    viewCardRemove(cards[id]);
+    cards.splice(id, 1);
+    saveCards();
+  }
+}
+
+// Server:
+
+function getCardBalance(card) {
 
   function fetch_csrf() {
     return new Promise(function (resolve, reject) {
@@ -109,28 +156,43 @@ function get_balance() {
     });
   }
 
-  cards.forEach(function (card) {
-    fetch_csrf().then(function (csrf) {
-      return fetch_balance(card.number, csrf).then(function (balance) {
-        card.balance = balance;
-        save_cards(cards);
-        save_datetime();
-        update_view();
-        console.info(card.owner + ': ' + card.balance);
-      });
-    }).catch(function (error) {
-      card.balance = '<span class="error">' + card.balance + '</span>';
-      update_view('<span class="error">Не удалось проверить баланс. Попробуйте позже.</span>');
-      console.warn(card.owner + ': ' + error);
+  viewCardLoading(card);
+  fetch_csrf().then(function (csrf) {
+    return fetch_balance(card.number, csrf).then(function (balance) {
+      card.balance = balance;
+      saveCards();
+      viewCardBalance(card);
+      updateStatusDate(saveDate());
+      console.info(card.owner + ': ' + card.balance);
     });
+  }).catch(function (error) {
+    viewCardError(card);
+    updateStatusText('<span class="error">Не удалось проверить баланс. Попробуйте позже.</span>');
+    console.warn(card.owner + ': ' + error);
   });
 }
 
-function save_cards() {
-  chrome.storage.sync.set({ cards: cards });
+function simulateHuman() {
+  return new Promise(function (resolve, reject) {
+    // Simulate human behavior:
+    var xhr_logo = new XMLHttpRequest();
+    xhr_logo.addEventListener('readystatechange', function () {
+      if (xhr_logo.readyState === 2) {
+        resolve(xhr_logo.response);
+      }
+    });
+    xhr_logo.open('HEAD', 'https://cabinet.onay.kz/content/img/SiteLogo.png');
+    xhr_logo.send();
+  });
 }
 
-function save_datetime() {
+// Storage:
+
+function saveCards() {
+  chrome.storage.sync.set({'cards': cards});
+}
+
+function saveDate() {
   var dt = new Date();
   var day = ('0' + dt.getDate()).slice(-2);
   var month = ('0' + (dt.getMonth() + 1)).slice(-2);
@@ -138,33 +200,44 @@ function save_datetime() {
   var hours = ('0' + dt.getHours()).slice(-2);
   var minutes = ('0' + dt.getMinutes()).slice(-2);
   var seconds = ('0' + dt.getSeconds()).slice(-2);
-  sync = {
+  var datetime = {
     date: day + '.' + month + '.' + year,
     time: hours + ':' + minutes + ':' + seconds
   };
-  chrome.storage.sync.set({ sync: sync });
-  update_view();
+  chrome.storage.sync.set({lastSync: datetime});
+  return datetime;
 }
 
-function load_settings() {
-  chrome.storage.sync.get('sync', function(data) {
-    sync = data.sync;
-  });
-  chrome.storage.sync.get('cards', function(data) {
-    if (data.cards && data.cards.length) {
-      cards = data.cards;
-      update_view('<b>Загрузка...</b>');
-      simulate_human().then(function () {
-        get_balance();
-      });
-    } else {
-      loaded();
-    }
-  });
+function loadCards(callback) {
+  chrome.storage.sync.get('cards', callback);
+}
+
+function loadDate(callback) {
+  chrome.storage.sync.get('lastSync', callback);
 }
 
 // Initialize:
 
 var cards = [];
-var sync = {};
-load_settings();
+
+loadCards(function (data) {
+  if (data.cards && data.cards.length) {
+    cards = data.cards;
+    generateCardsView(cards);
+    loadDate(function (data) {
+      if (data.lastSync) {
+        updateStatusDate(data.lastSync);
+      }
+    });
+    simulateHuman().then(function () {
+      cards.forEach(function (card) {
+        getCardBalance(card);
+      });
+    });
+  }
+});
+
+document.getElementById('btn-page-add').addEventListener('click', function () {
+  document.getElementById('page-main').style.display = 'none';
+  document.getElementById('page-add').style.display = 'block';
+}, false);

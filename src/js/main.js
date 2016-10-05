@@ -97,6 +97,7 @@ function addCard(number, owner) {
     balance: 0
   }
   cards.push(card);
+  generateCardsView();
   saveCards();
   getCardBalance(card);
   return true;

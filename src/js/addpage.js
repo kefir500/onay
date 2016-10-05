@@ -13,6 +13,8 @@ document.getElementById('btn-add').addEventListener('click', function () {
   var owner = document.getElementById('input-card-owner');
   if (number.value && owner.value) {
     addCard(number.value, owner.value);
+    number.value = '';
+    owner.value = '';
     showMainPage();
   }
 }, false);

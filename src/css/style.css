@@ -63,3 +63,15 @@ table#cards td:last-child { text-align: right; }
 
 .muted { color: rgba(0, 0, 0, 0.3); }
 .error { color: #F7512A; font-weight: bold; }
+
+@-webkit-keyframes loading-animation {
+	100% { -webkit-transform: rotate(360deg); }
+}
+
+.loading {
+	display: inline-block;
+	width: 22px;
+	height: 22px;
+	background: url('../img/loading.png');
+	-webkit-animation: loading-animation 1s linear infinite;
+}

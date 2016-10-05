@@ -45,7 +45,7 @@ function viewCardError(card) {
 function viewCardLoading(card) {
   var field = document.getElementById('card-balance-' + card.number);
   if (field) {
-    field.innerHTML = '...';
+    field.innerHTML = '<div class="loading"></div>';
     return true;
   } else {
     return false;

@@ -125,7 +125,7 @@ function getCardBalance(card) {
             var csrf = encodeURIComponent(response.getElementById('csrftoken').value);
             resolve(csrf);
           } else {
-            reject('Error fetching CSRF token: ' + xhr_card.status + ' ' + xhr_card.statusText);
+            reject('Error fetching CSRF token: ' + xhr_csrf.status + ' ' + xhr_csrf.statusText);
           }
         }
       });

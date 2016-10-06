@@ -95,7 +95,7 @@ function addCard(number, owner) {
     number: number,
     owner: owner,
     balance: 0
-  }
+  };
   cards.push(card);
   generateCardsView();
   saveCards();

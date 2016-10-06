@@ -144,7 +144,7 @@ function getCardBalance(card) {
             if (json.balance != null) {
               resolve(json.balance / 100.0);
             } else {
-              reject('Error fetching card balance: imporper JSON response');
+              reject('Error fetching card balance: improper JSON response');
             }
           } else {
             reject('Error fetching card balance: ' + xhr_card.status + ' ' + xhr_card.statusText);

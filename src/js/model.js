@@ -79,8 +79,7 @@ var model = {
     fetch_csrf().then(function (csrf) {
       return fetch_balance(card.number, csrf).then(function (balance) {
         card.balance = balance;
-        //model.onBalanceUpdate(card);
-        model.onBalanceLoading(card);
+        model.onBalanceUpdate(card);
         model.saveCards();
         model.saveDate();
       });

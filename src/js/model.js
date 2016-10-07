@@ -9,12 +9,12 @@ var model = {
       console.warn('Invalid card format.');
       return false;
     }
-    cards.forEach(function (card) {
-      if (card.number === number) {
+    for (var i = 0; i < cards.length; ++i) {
+      if (cards[i].number == number) {
         console.warn('Card ' + number + ' is already in the list');
         return false;
       }
-    });
+    }
     var card = {
       number: number,
       owner: owner,

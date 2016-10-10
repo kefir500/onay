@@ -9,11 +9,9 @@ var model = {
       console.warn('Invalid card number.');
       return false;
     }
-    for (var i = 0; i < cards.length; ++i) {
-      if (cards[i].number == number) {
-        console.warn('Card ' + number + ' is already in the list');
-        return false;
-      }
+    if (this.findCard(number)) {
+      console.warn('Card ' + number + ' is already in the list');
+      return false;
     }
     var card = {
       number: number,
@@ -25,6 +23,15 @@ var model = {
     this.saveCards();
     this.fetchCardBalance(card);
     return true;
+  },
+
+  findCard: function (number) {
+    for (var i = 0; i < cards.length; ++i) {
+      if (cards[i].number == number) {
+        return cards[i];
+      }
+    }
+    return null;
   },
 
   removeCard: function (card) {

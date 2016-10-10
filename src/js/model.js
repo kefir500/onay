@@ -6,7 +6,7 @@ var model = {
 
   addCard: function (number, owner) {
     if (number != parseInt(number, 10)) {
-      console.warn('Invalid card format.');
+      console.warn('Invalid card number.');
       return false;
     }
     for (var i = 0; i < cards.length; ++i) {

@@ -9,6 +9,10 @@ var model = {
       console.warn('Invalid card number.');
       return false;
     }
+    if (!(owner && owner.trim().length)) {
+      console.warn('Invalid card owner.');
+      return false;
+    }
     if (this.findCard(number)) {
       console.warn('Card ' + number + ' is already in the list');
       return false;

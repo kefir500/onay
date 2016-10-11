@@ -55,9 +55,12 @@ a.btn:active { background-color: #F5AA12; }
 .header { text-align: right; }
 .footer { text-align: right; }
 
-table#cards { width: 100%; border-spacing: 0; }
+table#cards { width: 100%; border-spacing: 4px 0; }
 table#cards td { border-bottom: 1px solid rgba(0, 0, 0, 0.15); }
 table#cards td:last-child { text-align: right; }
+
+.drag { opacity: 0.35; }
+.drop { outline: 1px dashed rgba(0, 0, 0, 0.75); }
 
 #status { display: none; padding-top: 10px; }
 

@@ -38,6 +38,13 @@ var model = {
     return null;
   },
 
+  swapCards: function (id1, id2) {
+    var buffer = cards[id1];
+    cards[id1] = cards[id2];
+    cards[id2] = buffer;
+    this.saveCards();
+  },
+
   removeCard: function (card) {
     cards.splice(cards.indexOf(card), 1);
     this.saveCards();

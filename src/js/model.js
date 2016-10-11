@@ -38,11 +38,18 @@ var model = {
     return null;
   },
 
-  swapCards: function (id1, id2) {
-    var buffer = cards[id1];
-    cards[id1] = cards[id2];
-    cards[id2] = buffer;
-    this.saveCards();
+  swapCards: function (pan1, pan2) {
+    var id1 = cards.indexOf(this.findCard(pan1));
+    var id2 = cards.indexOf(this.findCard(pan2));
+    if (id1 >= 0 && id2 >= 0) {
+      var buffer = cards[id1];
+      cards[id1] = cards[id2];
+      cards[id2] = buffer;
+      this.saveCards();
+      return true;
+    } else {
+      return false;
+    }
   },
 
   removeCard: function (card) {

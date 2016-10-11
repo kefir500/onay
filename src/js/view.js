@@ -5,7 +5,7 @@ var view = {
     var table = document.getElementById('cards');
     var row = table.insertRow(table.rows.length);
     row.setAttribute('draggable', 'true');
-    row.setAttribute('data-card-id', table.rows.length - 1);
+    row.setAttribute('data-card-pan', card.number);
     row.addEventListener('dragstart', dragStart, false);
     row.addEventListener('dragenter', dragEnter, false);
     row.addEventListener('dragover', dragOver, false);
@@ -91,20 +91,19 @@ var view = {
 };
 
 var dragElement;
-var prevDropArea;
+var dropElement;
 
 function dragStart(event) {
   this.classList.add('drag');
   event.dataTransfer.effectAllowed = 'move';
-  event.dataTransfer.setData('text/html', this.innerHTML);
   dragElement = this;
 }
 
 function dragEnter(event) {
-  if (prevDropArea) {
-    prevDropArea.classList.remove('drop');
+  if (dropElement) {
+    dropElement.classList.remove('drop');
   }
-  prevDropArea = this;
+  dropElement = this;
   this.classList.add('drop');
 }
 
@@ -115,16 +114,19 @@ function dragOver(event) {
 
 function dragEnd(event) {
   this.classList.remove('drag');
-  prevDropArea.classList.remove('drop');
+  dropElement.classList.remove('drop');
 }
 
 function dragDrop(event) {
   event.stopPropagation();
-  if (dragElement !== this) {
-    var dragId = dragElement.getAttribute('data-card-id');
-    var dropId = this.getAttribute('data-card-id');
-    dragElement.innerHTML = this.innerHTML;
-    this.innerHTML = event.dataTransfer.getData('text/html');
-    view.onSwap(dragId, dropId);
+  if (dragElement !== dropElement) {
+    var temp = document.createElement('tr');
+    dragElement.parentNode.insertBefore(temp, dragElement);
+    dropElement.parentNode.insertBefore(dragElement, dropElement);
+    temp.parentNode.insertBefore(dropElement, temp);
+    temp.parentNode.removeChild(temp);
+    var dragPan = dragElement.getAttribute('data-card-pan');
+    var dropPan = this.getAttribute('data-card-pan');
+    view.onSwap(dragPan, dropPan);
   }
 }

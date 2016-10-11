@@ -25,6 +25,10 @@ view.onRemove = function (card) {
   model.removeCard(card);
 };
 
+view.onSwap = function (pan1, pan2) {
+  model.swapCards(pan1, pan2);
+};
+
 model.loadCards();
 model.loadDate();
 

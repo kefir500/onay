@@ -4,6 +4,7 @@ var view = {
     document.getElementById('help').style.display = 'none';
     var table = document.getElementById('cards');
     var row = table.insertRow(table.rows.length);
+    row.className = 'card';
     row.setAttribute('draggable', 'true');
     row.setAttribute('data-card-pan', card.number);
     row.addEventListener('dragstart', dragStart, false);
@@ -67,8 +68,12 @@ var view = {
   },
 
   setLastUpdate: function (datetime) {
-    document.getElementById('status').style.display = 'block';
     document.getElementById('status-date').innerHTML = 'Последняя синхронизация: <b>' + datetime.date + ' &ndash; ' + datetime.time + '</b>';
+    if (document.getElementsByClassName('card').length > 0) {
+      document.getElementById('status').style.display = 'block';
+    } else {
+      document.getElementById('status').style.display = 'none';
+    }
   },
 
   showMainPage: function () {

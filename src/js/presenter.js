@@ -1,20 +1,22 @@
 (function () {
 
   Model.onAdd = function (card) {
-    View.addCard(card);
+    View.addCard(card.number, card.owner);
+    View.setCardBalance(card.number, card.balance);
   };
 
   Model.onBalanceUpdate = function (card) {
-    View.setCardBalance(card);
+    View.setCardBalance(card.number, card.balance);
     console.info(card.owner + ': ' + card.balance);
   };
 
   Model.onBalanceLoading = function (card) {
-    View.setCardLoading(card);
+    View.setCardLoading(card.number);
   };
 
   Model.onBalanceError = function (card, error) {
-    View.setCardError(card);
+    View.setCardBalance(card.number, card.balance);
+    View.setCardError(card.number);
     View.setStatus('<span class="error">Не удалось проверить баланс. Попробуйте позже.</span>');
     console.warn(card.owner + ': ' + error);
   };
@@ -23,8 +25,8 @@
     View.setLastUpdate(date);
   };
 
-  View.onRemove = function (card) {
-    Model.removeCard(card);
+  View.onRemove = function (pan) {
+    Model.removeCard(pan);
   };
 
   View.onSwap = function (pan1, pan2) {

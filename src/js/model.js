@@ -57,8 +57,8 @@ var Model = (function () {
       }
     },
 
-    removeCard: function (card) {
-      cards.splice(cards.indexOf(card), 1);
+    removeCard: function (pan) {
+      cards.splice(cards.indexOf(this.findCardByPan(pan)), 1);
       this.saveCards();
     },
 

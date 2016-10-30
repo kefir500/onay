@@ -42,13 +42,13 @@ var View = (function () {
   }
 
   var view = {
-    addCard: function (card) {
+    addCard: function (pan, owner) {
       document.getElementById('help').style.display = 'none';
       var table = document.getElementById('cards');
       var row = table.insertRow(table.rows.length);
       row.className = 'card';
       row.setAttribute('draggable', 'true');
-      row.setAttribute('data-card-pan', card.number);
+      row.setAttribute('data-card-pan', pan);
       row.addEventListener('dragstart', dragStart, false);
       row.addEventListener('dragenter', dragEnter, false);
       row.addEventListener('dragover', dragOver, false);
@@ -56,40 +56,41 @@ var View = (function () {
       row.addEventListener('drop', dragDrop, false);
       var cell1 = row.insertCell(0);
       var cell2 = row.insertCell(1);
-      cell1.innerHTML = '<h2>' + card.owner + '</h2><h2 class="muted">' + card.number + '</h2>';
-      cell2.innerHTML = '<h1 id="card-balance-' + card.number + '">' + card.balance + '</h1>';
+      cell1.innerHTML = '<h2>' + owner + '</h2><h2 class="muted">' + pan + '</h2>';
+      cell2.innerHTML = '<h1 id="card-balance-' + pan + '">0</h1>';
       var btnDelete = document.createElement('a');
       btnDelete.innerHTML = 'Удалить';
       btnDelete.setAttribute('href', '#');
       btnDelete.addEventListener('click', function () {
         row.remove();
-        view.onRemove(card);
+        view.onRemove(pan);
       }, false);
       cell1.appendChild(btnDelete);
     },
 
-    setCardBalance: function (card) {
-      var field = document.getElementById('card-balance-' + card.number);
+    setCardBalance: function (pan, balance) {
+      var field = document.getElementById('card-balance-' + pan);
       if (field) {
-        field.innerHTML = card.balance;
+        field.className = '';
+        field.innerHTML = balance;
         return true;
       } else {
         return false;
       }
     },
 
-    setCardError: function (card) {
-      var field = document.getElementById('card-balance-' + card.number);
+    setCardError: function (pan) {
+      var field = document.getElementById('card-balance-' + pan);
       if (field) {
-        field.innerHTML = '<span class="error">' + card.balance + '</span>';
+        field.className = 'error';
         return true;
       } else {
         return false;
       }
     },
 
-    setCardLoading: function (card) {
-      var field = document.getElementById('card-balance-' + card.number);
+    setCardLoading: function (pan) {
+      var field = document.getElementById('card-balance-' + pan);
       if (field) {
         field.innerHTML = '<div class="loading"></div>';
         return true;
@@ -128,11 +129,11 @@ var View = (function () {
       document.getElementById('page-add').style.display = 'block';
     },
 
-    onRemove: function () {
+    onRemove: function (pan) {
       // Fired when "Remove" button is clicked.
     },
 
-    onSwap: function () {
+    onSwap: function (pan1, pan2) {
       // Fired when two cards are swapped.
     }
   };

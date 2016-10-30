@@ -62,6 +62,11 @@ var Model = (function () {
       this.saveCards();
     },
 
+    clearCards: function () {
+      cards = [];
+      this.saveCards();
+    },
+
     fetchCardBalance: function (card) {
       function fetch_csrf() {
         return new Promise(function (resolve, reject) {

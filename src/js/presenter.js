@@ -35,8 +35,7 @@ model.loadDate();
 document.getElementById('btn-add').addEventListener('click', function () {
   var number = document.getElementById('input-card-number');
   var owner = document.getElementById('input-card-owner');
-  if (number.value && owner.value) {
-    model.addCard(number.value, owner.value);
+  if (model.addCard(number.value, owner.value)) {
     number.value = '';
     owner.value = '';
     view.showMainPage();

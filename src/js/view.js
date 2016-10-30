@@ -16,14 +16,14 @@ var view = {
     var cell2 = row.insertCell(1);
     cell1.innerHTML = '<h2>' + card.owner + '</h2><h2 class="muted">' + card.number + '</h2>';
     cell2.innerHTML = '<h1 id="card-balance-' + card.number + '">' + card.balance + '</h1>';
-    var btnDelete = document.createElement('h5');
-    btnDelete.innerHTML = '<a href="#">Удалить</a>';
-    cell1.appendChild(btnDelete);
-    // Remove card:
+    var btnDelete = document.createElement('a');
+    btnDelete.innerHTML = 'Удалить';
+    btnDelete.setAttribute('href', '#');
     btnDelete.addEventListener('click', function () {
       row.remove();
       view.onRemove(card);
     }, false);
+    cell1.appendChild(btnDelete);
   },
 
   setCardBalance: function (card) {

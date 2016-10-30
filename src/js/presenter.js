@@ -1,51 +1,55 @@
-model.onAdd = function (card) {
-  view.addCard(card);
-};
+(function () {
 
-model.onBalanceUpdate = function (card) {
-  view.setCardBalance(card);
-  console.info(card.owner + ': ' + card.balance);
-};
+  Model.onAdd = function (card) {
+    View.addCard(card);
+  };
 
-model.onBalanceLoading = function (card) {
-  view.setCardLoading(card);
-};
+  Model.onBalanceUpdate = function (card) {
+    View.setCardBalance(card);
+    console.info(card.owner + ': ' + card.balance);
+  };
 
-model.onBalanceError = function (card, error) {
-  view.setCardError(card);
-  view.setStatus('<span class="error">Не удалось проверить баланс. Попробуйте позже.</span>');
-  console.warn(card.owner + ': ' + error);
-};
+  Model.onBalanceLoading = function (card) {
+    View.setCardLoading(card);
+  };
 
-model.onDateUpdate = function (date) {
-  view.setLastUpdate(date);
-};
+  Model.onBalanceError = function (card, error) {
+    View.setCardError(card);
+    View.setStatus('<span class="error">Не удалось проверить баланс. Попробуйте позже.</span>');
+    console.warn(card.owner + ': ' + error);
+  };
 
-view.onRemove = function (card) {
-  model.removeCard(card);
-};
+  Model.onDateUpdate = function (date) {
+    View.setLastUpdate(date);
+  };
 
-view.onSwap = function (pan1, pan2) {
-  model.swapCards(pan1, pan2);
-};
+  View.onRemove = function (card) {
+    Model.removeCard(card);
+  };
 
-model.loadCards();
-model.loadDate();
+  View.onSwap = function (pan1, pan2) {
+    Model.swapCards(pan1, pan2);
+  };
 
-document.getElementById('btn-add').addEventListener('click', function () {
-  var number = document.getElementById('input-card-number');
-  var owner = document.getElementById('input-card-owner');
-  if (model.addCard(number.value, owner.value)) {
-    number.value = '';
-    owner.value = '';
-    view.showMainPage();
-  }
-}, false);
+  Model.loadCards();
+  Model.loadDate();
 
-document.getElementById('btn-page-main').addEventListener('click', function () {
-  view.showMainPage();
-}, false);
+  document.getElementById('btn-add').addEventListener('click', function () {
+    var number = document.getElementById('input-card-number');
+    var owner = document.getElementById('input-card-owner');
+    if (Model.addCard(number.value, owner.value)) {
+      number.value = '';
+      owner.value = '';
+      View.showMainPage();
+    }
+  }, false);
 
-document.getElementById('btn-page-add').addEventListener('click', function () {
-  view.showAddPage();
-}, false);
+  document.getElementById('btn-page-main').addEventListener('click', function () {
+    View.showMainPage();
+  }, false);
+
+  document.getElementById('btn-page-add').addEventListener('click', function () {
+    View.showAddPage();
+  }, false);
+
+}());

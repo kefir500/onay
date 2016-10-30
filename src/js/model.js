@@ -13,7 +13,7 @@ var model = {
       console.warn('Invalid card owner.');
       return false;
     }
-    if (this.findCard(number)) {
+    if (this.findCardByPan(number)) {
       console.warn('Card ' + number + ' is already in the list');
       return false;
     }
@@ -29,7 +29,7 @@ var model = {
     return true;
   },
 
-  findCard: function (number) {
+  findCardByPan: function (number) {
     for (var i = 0; i < cards.length; ++i) {
       if (cards[i].number == number) {
         return cards[i];
@@ -38,9 +38,14 @@ var model = {
     return null;
   },
 
+  findCardByIndex: function (index) {
+    // This function is currently used only in unit tests.
+    return cards[index];
+  },
+
   swapCards: function (pan1, pan2) {
-    var id1 = cards.indexOf(this.findCard(pan1));
-    var id2 = cards.indexOf(this.findCard(pan2));
+    var id1 = cards.indexOf(this.findCardByPan(pan1));
+    var id2 = cards.indexOf(this.findCardByPan(pan2));
     if (id1 >= 0 && id2 >= 0) {
       var buffer = cards[id1];
       cards[id1] = cards[id2];

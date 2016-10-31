@@ -25,6 +25,14 @@
     View.setLastUpdate(date);
   };
 
+  View.onAdd = function (pan, owner) {
+    if (Model.addCard(pan, owner)) {
+      View.showMainPage();
+    } else {
+      // TODO Error
+    }
+  };
+
   View.onRemove = function (pan) {
     Model.removeCard(pan);
   };
@@ -35,23 +43,5 @@
 
   Model.loadCards();
   Model.loadDate();
-
-  document.getElementById('btn-add').addEventListener('click', function () {
-    var number = document.getElementById('input-card-number');
-    var owner = document.getElementById('input-card-owner');
-    if (Model.addCard(number.value, owner.value)) {
-      number.value = '';
-      owner.value = '';
-      View.showMainPage();
-    }
-  }, false);
-
-  document.getElementById('btn-page-main').addEventListener('click', function () {
-    View.showMainPage();
-  }, false);
-
-  document.getElementById('btn-page-add').addEventListener('click', function () {
-    View.showAddPage();
-  }, false);
 
 }());

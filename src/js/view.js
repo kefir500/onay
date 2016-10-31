@@ -1,46 +1,5 @@
 var View = (function () {
 
-  var dragElement;
-  var dropElement;
-
-  function dragStart(event) {
-    this.classList.add('drag');
-    event.dataTransfer.effectAllowed = 'move';
-    dragElement = this;
-  }
-
-  function dragEnter(event) {
-    if (dropElement) {
-      dropElement.classList.remove('drop');
-    }
-    dropElement = this;
-    this.classList.add('drop');
-  }
-
-  function dragOver(event) {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-  }
-
-  function dragEnd(event) {
-    this.classList.remove('drag');
-    dropElement.classList.remove('drop');
-  }
-
-  function dragDrop(event) {
-    event.stopPropagation();
-    if (dragElement !== dropElement) {
-      var temp = document.createElement('tr');
-      dragElement.parentNode.insertBefore(temp, dragElement);
-      dropElement.parentNode.insertBefore(dragElement, dropElement);
-      temp.parentNode.insertBefore(dropElement, temp);
-      temp.parentNode.removeChild(temp);
-      var dragPan = dragElement.getAttribute('data-card-pan');
-      var dropPan = this.getAttribute('data-card-pan');
-      view.onSwap(dragPan, dropPan);
-    }
-  }
-
   var view = {
     addCard: function (pan, owner) {
       document.getElementById('help').style.display = 'none';
@@ -122,11 +81,17 @@ var View = (function () {
     showMainPage: function () {
       document.getElementById('page-add').style.display = 'none';
       document.getElementById('page-main').style.display = 'block';
+      document.getElementById('input-card-number').value = '';
+      document.getElementById('input-card-owner').value = '';
     },
 
     showAddPage: function () {
       document.getElementById('page-main').style.display = 'none';
       document.getElementById('page-add').style.display = 'block';
+    },
+
+    onAdd: function (pan, owner) {
+      // Fired when "Add" button is clicked.
     },
 
     onRemove: function (pan) {
@@ -137,6 +102,65 @@ var View = (function () {
       // Fired when two cards are swapped.
     }
   };
+
+  // Buttons:
+
+  document.getElementById('btn-add').addEventListener('click', function () {
+    var pan = document.getElementById('input-card-number').value;
+    var owner = document.getElementById('input-card-owner').value;
+    view.onAdd(pan, owner);
+  }, false);
+
+  document.getElementById('btn-page-main').addEventListener('click', function () {
+    view.showMainPage();
+  }, false);
+
+  document.getElementById('btn-page-add').addEventListener('click', function () {
+    view.showAddPage();
+  }, false);
+
+  // Drag and Drop:
+
+  var dragElement;
+  var dropElement;
+
+  function dragStart(event) {
+    this.classList.add('drag');
+    event.dataTransfer.effectAllowed = 'move';
+    dragElement = this;
+  }
+
+  function dragEnter(event) {
+    if (dropElement) {
+      dropElement.classList.remove('drop');
+    }
+    dropElement = this;
+    this.classList.add('drop');
+  }
+
+  function dragOver(event) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }
+
+  function dragEnd(event) {
+    this.classList.remove('drag');
+    dropElement.classList.remove('drop');
+  }
+
+  function dragDrop(event) {
+    event.stopPropagation();
+    if (dragElement !== dropElement) {
+      var temp = document.createElement('tr');
+      dragElement.parentNode.insertBefore(temp, dragElement);
+      dropElement.parentNode.insertBefore(dragElement, dropElement);
+      temp.parentNode.insertBefore(dropElement, temp);
+      temp.parentNode.removeChild(temp);
+      var dragPan = dragElement.getAttribute('data-card-pan');
+      var dropPan = this.getAttribute('data-card-pan');
+      view.onSwap(dragPan, dropPan);
+    }
+  }
 
   return view;
 

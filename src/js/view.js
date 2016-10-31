@@ -16,9 +16,10 @@ var View = (function () {
       var cell1 = row.insertCell(0);
       var cell2 = row.insertCell(1);
       cell1.innerHTML = '<h2>' + owner + '</h2><h2 class="muted">' + pan + '</h2>';
-      cell2.innerHTML = '<h1 id="card-balance-' + pan + '">0</h1>';
+      cell2.innerHTML = '<h1 class="card-balance">0</h1>';
       var btnDelete = document.createElement('a');
       btnDelete.innerHTML = 'Удалить';
+      btnDelete.className = 'btn-delete';
       btnDelete.setAttribute('href', '#');
       btnDelete.addEventListener('click', function () {
         row.remove();
@@ -28,9 +29,9 @@ var View = (function () {
     },
 
     setCardBalance: function (pan, balance) {
-      var field = document.getElementById('card-balance-' + pan);
+      var field = document.querySelectorAll('[data-card-pan="' + pan + '"] .card-balance')[0];
       if (field) {
-        field.className = '';
+        field.className = 'card-balance';
         field.innerHTML = balance;
         return true;
       } else {
@@ -39,9 +40,9 @@ var View = (function () {
     },
 
     setCardError: function (pan) {
-      var field = document.getElementById('card-balance-' + pan);
+      var field = document.querySelectorAll('[data-card-pan="' + pan + '"] .card-balance')[0];
       if (field) {
-        field.className = 'error';
+        field.className = 'card-balance error';
         return true;
       } else {
         return false;
@@ -49,7 +50,7 @@ var View = (function () {
     },
 
     setCardLoading: function (pan) {
-      var field = document.getElementById('card-balance-' + pan);
+      var field = document.querySelectorAll('[data-card-pan="' + pan + '"] .card-balance')[0];
       if (field) {
         field.innerHTML = '<div class="loading"></div>';
         return true;

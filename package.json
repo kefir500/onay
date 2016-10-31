@@ -1,0 +1,30 @@
+{
+  "name": "onay",
+  "version": "0.4.0",
+  "description": "Google Chrome extension to check the Onay (Kazakhstan transport card) balance.",
+  "scripts": {
+    "test": "karma start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kefir500/onay.git"
+  },
+  "author": {
+    "name": "Alexander Gorishnyak",
+    "email": "kefir500@gmail.com",
+    "url": "http://kefir500.github.io"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kefir500/onay/issues",
+    "email": "kefir500@gmail.com"
+  },
+  "homepage": "https://github.com/kefir500/onay",
+  "devDependencies": {
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.3.0",
+    "karma-cli": "^1.0.1",
+    "karma-jasmine": "^1.0.2",
+    "karma-chrome-launcher": "^2.0.0"
+  }
+}

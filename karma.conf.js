@@ -1,5 +1,6 @@
 module.exports = function(config) {
-  config.set({
+
+  var karma = {
     frameworks: ['jasmine'],
     files: [
       'test/*.spec.js',
@@ -16,7 +17,19 @@ module.exports = function(config) {
     },
     autoWatch: false,
     browsers: ['Chrome'],
+    customLaunchers: {
+      ChromeTravis: {
+        base: 'Chrome',
+        flags: ['--no-sandbox']
+      }
+    },
     singleRun: true,
     concurrency: Infinity
-  })
+  };
+
+  if (process.env.TRAVIS) {
+    karma.browsers = ['ChromeTravis'];
+  }
+
+  config.set(karma);
 };

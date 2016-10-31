@@ -2,6 +2,10 @@ var Model = (function () {
 
   var cards = [];
 
+  function isTest() {
+    return typeof unittest !== 'undefined' && unittest == true;
+  }
+
   var model = {
 
     addCard: function (number, owner) {
@@ -111,16 +115,18 @@ var Model = (function () {
       }
 
       model.onBalanceLoading(card);
-      fetch_csrf().then(function (csrf) {
-        return fetch_balance(card.number, csrf).then(function (balance) {
-          card.balance = balance;
-          model.onBalanceUpdate(card);
-          model.saveCards();
-          model.saveDate();
+      if (!isTest()) {
+        fetch_csrf().then(function (csrf) {
+          return fetch_balance(card.number, csrf).then(function (balance) {
+            card.balance = balance;
+            model.onBalanceUpdate(card);
+            model.saveCards();
+            model.saveDate();
+          });
+        }).catch(function (error) {
+          model.onBalanceError(card, error);
         });
-      }).catch(function (error) {
-        model.onBalanceError(card, error);
-      });
+      }
     },
 
     simulateHuman: function () {
@@ -138,53 +144,61 @@ var Model = (function () {
     },
 
     loadCards: function () {
-      chrome.storage.sync.get('cards', function (data) {
-        if (data.cards && data.cards.length) {
-          cards = data.cards;
-          cards.forEach(function (card) {
-            model.onAdd(card);
-            model.onBalanceLoading(card);
-          });
-          model.simulateHuman().then(function () {
+      if (!isTest()) {
+        chrome.storage.sync.get('cards', function (data) {
+          if (data.cards && data.cards.length) {
+            cards = data.cards;
             cards.forEach(function (card) {
-              model.fetchCardBalance(card);
+              model.onAdd(card);
+              model.onBalanceLoading(card);
             });
-          });
-        }
-      });
+            model.simulateHuman().then(function () {
+              cards.forEach(function (card) {
+                model.fetchCardBalance(card);
+              });
+            });
+          }
+        });
+      }
     },
 
     saveCards: function () {
-      chrome.storage.sync.set({
-        'cards': cards
-      });
+      if (!isTest()) {
+        chrome.storage.sync.set({
+          'cards': cards
+        });
+      }
     },
 
     loadDate: function () {
-      chrome.storage.sync.get('lastSync', function (data) {
-        if (data.lastSync) {
-          model.onDateUpdate(data.lastSync);
-        }
-      });
+      if (!isTest()) {
+        chrome.storage.sync.get('lastSync', function (data) {
+          if (data.lastSync) {
+            model.onDateUpdate(data.lastSync);
+          }
+        });
+      }
     },
 
     saveDate: function () {
-      var dt = new Date();
-      var day = ('0' + dt.getDate()).slice(-2);
-      var month = ('0' + (dt.getMonth() + 1)).slice(-2);
-      var year = ('0' + dt.getFullYear()).slice(-2);
-      var hours = ('0' + dt.getHours()).slice(-2);
-      var minutes = ('0' + dt.getMinutes()).slice(-2);
-      var seconds = ('0' + dt.getSeconds()).slice(-2);
-      var datetime = {
-        date: day + '.' + month + '.' + year,
-        time: hours + ':' + minutes + ':' + seconds
-      };
-      chrome.storage.sync.set({
-        lastSync: datetime
-      });
-      this.onDateUpdate(datetime);
-      return datetime;
+      if (!isTest()) {
+        var dt = new Date();
+        var day = ('0' + dt.getDate()).slice(-2);
+        var month = ('0' + (dt.getMonth() + 1)).slice(-2);
+        var year = ('0' + dt.getFullYear()).slice(-2);
+        var hours = ('0' + dt.getHours()).slice(-2);
+        var minutes = ('0' + dt.getMinutes()).slice(-2);
+        var seconds = ('0' + dt.getSeconds()).slice(-2);
+        var datetime = {
+          date: day + '.' + month + '.' + year,
+          time: hours + ':' + minutes + ':' + seconds
+        };
+        chrome.storage.sync.set({
+          lastSync: datetime
+        });
+        this.onDateUpdate(datetime);
+        return datetime;
+      }
     },
 
     onAdd: function (card) {

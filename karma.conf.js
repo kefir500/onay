@@ -8,7 +8,6 @@ module.exports = function(config) {
       'src/js/view.js',
       'src/js/presenter.js'
     ],
-    reporters: ['progress'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
@@ -23,6 +22,12 @@ module.exports = function(config) {
         flags: ['--no-sandbox']
       }
     },
+    reporters: ['progress', 'coverage'],
+    coverageReporter: {
+      type: 'lcovonly',
+      subdir: '.'
+    },
+    preprocessors: {'src/js/*.js': ['coverage']},
     singleRun: true,
     concurrency: Infinity
   };

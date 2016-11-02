@@ -85,4 +85,18 @@ describe('Model', function () {
     expect(Model.findCardByPan(33333)).toBe(null);
     expect(Model.findCardByIndex(0)).toBe(undefined);
   });
+
+  it('fetches balance', function (done) {
+    Model.addCard('9643908503302335652', 'Real Card');
+    Model.onBalanceUpdate = function (card) {
+      expect(card.balance).toBeGreaterThan(0);
+      done();
+    };
+    Model.onBalanceError = function () {
+      done.fail();
+    };
+    Model.simulateHuman().then(function () {
+      Model.fetchCardBalance(Model.findCardByPan('9643908503302335652'));
+    });
+  });
 });

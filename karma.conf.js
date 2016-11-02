@@ -15,11 +15,15 @@ module.exports = function(config) {
       captureConsole: false
     },
     autoWatch: false,
-    browsers: ['Chrome'],
+    browsers: ['ChromeCors'],
     customLaunchers: {
+      ChromeCors: {
+        base: 'Chrome',
+        flags: ['--disable-web-security']
+      },
       ChromeTravis: {
         base: 'Chrome',
-        flags: ['--no-sandbox']
+        flags: ['--disable-web-security', '--no-sandbox']
       }
     },
     reporters: ['progress', 'coverage'],

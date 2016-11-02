@@ -1,5 +1,14 @@
 unittest = true;
 
+chrome = {
+  storage: {
+    sync: {
+      get: function () {},
+      set: function () {}
+    }
+  }
+};
+
 describe('Model', function () {
 
   beforeEach(function () {

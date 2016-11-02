@@ -29,7 +29,9 @@ var Model = (function () {
       cards.push(card);
       this.onAdd(card);
       this.saveCards();
-      this.fetchCardBalance(card);
+      if (!isTest()) {
+        this.fetchCardBalance(card);
+      }
       return true;
     },
 
@@ -72,6 +74,7 @@ var Model = (function () {
     },
 
     fetchCardBalance: function (card) {
+
       function fetch_csrf() {
         return new Promise(function (resolve, reject) {
           var xhr_csrf = new XMLHttpRequest();
@@ -115,18 +118,16 @@ var Model = (function () {
       }
 
       model.onBalanceLoading(card);
-      if (!isTest()) {
-        fetch_csrf().then(function (csrf) {
-          return fetch_balance(card.number, csrf).then(function (balance) {
-            card.balance = balance;
-            model.onBalanceUpdate(card);
-            model.saveCards();
-            model.saveDate();
-          });
-        }).catch(function (error) {
-          model.onBalanceError(card, error);
+      fetch_csrf().then(function (csrf) {
+        return fetch_balance(card.number, csrf).then(function (balance) {
+          card.balance = balance;
+          model.onBalanceUpdate(card);
+          model.saveCards();
+          model.saveDate();
         });
-      }
+      }).catch(function (error) {
+        model.onBalanceError(card, error);
+      });
     },
 
     simulateHuman: function () {
@@ -163,42 +164,36 @@ var Model = (function () {
     },
 
     saveCards: function () {
-      if (!isTest()) {
-        chrome.storage.sync.set({
-          'cards': cards
-        });
-      }
+      chrome.storage.sync.set({
+        'cards': cards
+      });
     },
 
     loadDate: function () {
-      if (!isTest()) {
-        chrome.storage.sync.get('lastSync', function (data) {
-          if (data.lastSync) {
-            model.onDateUpdate(data.lastSync);
-          }
-        });
-      }
+      chrome.storage.sync.get('lastSync', function (data) {
+        if (data.lastSync) {
+          model.onDateUpdate(data.lastSync);
+        }
+      });
     },
 
     saveDate: function () {
-      if (!isTest()) {
-        var dt = new Date();
-        var day = ('0' + dt.getDate()).slice(-2);
-        var month = ('0' + (dt.getMonth() + 1)).slice(-2);
-        var year = ('0' + dt.getFullYear()).slice(-2);
-        var hours = ('0' + dt.getHours()).slice(-2);
-        var minutes = ('0' + dt.getMinutes()).slice(-2);
-        var seconds = ('0' + dt.getSeconds()).slice(-2);
-        var datetime = {
-          date: day + '.' + month + '.' + year,
-          time: hours + ':' + minutes + ':' + seconds
-        };
-        chrome.storage.sync.set({
-          lastSync: datetime
-        });
-        this.onDateUpdate(datetime);
-        return datetime;
-      }
+      var dt = new Date();
+      var day = ('0' + dt.getDate()).slice(-2);
+      var month = ('0' + (dt.getMonth() + 1)).slice(-2);
+      var year = ('0' + dt.getFullYear()).slice(-2);
+      var hours = ('0' + dt.getHours()).slice(-2);
+      var minutes = ('0' + dt.getMinutes()).slice(-2);
+      var seconds = ('0' + dt.getSeconds()).slice(-2);
+      var datetime = {
+        date: day + '.' + month + '.' + year,
+        time: hours + ':' + minutes + ':' + seconds
+      };
+      chrome.storage.sync.set({
+        lastSync: datetime
+      });
+      this.onDateUpdate(datetime);
+      return datetime;
     },
 
     onAdd: function (card) {

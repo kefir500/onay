@@ -29,7 +29,10 @@ module.exports = function(config) {
         {type: 'lcovonly', subdir: './lcov'}
       ]
     },
-    preprocessors: {'src/js/*.js': ['coverage']},
+    preprocessors: {
+      'src/js/model.js': ['coverage'],
+      'src/js/view.js': ['coverage']
+    },
     singleRun: true,
     concurrency: Infinity
   };

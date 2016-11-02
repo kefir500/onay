@@ -24,8 +24,10 @@ module.exports = function(config) {
     },
     reporters: ['progress', 'coverage'],
     coverageReporter: {
-      type: 'lcovonly',
-      subdir: '.'
+      reporters: [
+        {type: 'html', subdir: './html'},
+        {type: 'lcovonly', subdir: './lcov'}
+      ]
     },
     preprocessors: {'src/js/*.js': ['coverage']},
     singleRun: true,

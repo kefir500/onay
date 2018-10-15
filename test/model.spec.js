@@ -3,8 +3,17 @@ unittest = true;
 chrome = {
   storage: {
     sync: {
-      get: function () {},
-      set: function () {}
+      set: function () {},
+      get: function (key) {
+        if (key === 'cards') {
+          return {
+            cards: [
+              {number: '11111', owner: '1'},
+              {number: '11111', owner: '2'}
+            ]
+          }
+        }
+      }
     }
   }
 };
@@ -68,6 +77,14 @@ describe('Model', function () {
     expect(Model.findCardByPan(33333).owner).toBe('Janis');
   });
 
+  it('does not swap invalid cards', function () {
+    Model.addCard(11111, 'OWNER');
+    Model.addCard(22222, 'OWNER');
+    expect(Model.swapCards(11111, 22222)).toBe(true);
+    expect(Model.swapCards(22222, 11111)).toBe(true);
+    expect(Model.swapCards(77777, 99999)).toBe(false);
+  });
+
   it('removes card by PAN', function () {
     Model.addCard(11111, 'The Good');
     Model.addCard(22222, 'The Bad');
@@ -95,7 +112,7 @@ describe('Model', function () {
     expect(Model.findCardByIndex(0)).toBe(undefined);
   });
 
-  it('fetches balance', function (done) {
+  it('fetches actual card balance', function (done) {
     Model.addCard('9643908503302335652', 'Real Card');
     Model.onBalanceUpdate = function (card) {
       expect(card.balance).toBeGreaterThan(0);

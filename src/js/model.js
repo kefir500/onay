@@ -2,10 +2,6 @@ var Model = (function () {
 
   var cards = [];
 
-  function isTest() {
-    return typeof unittest !== 'undefined' && unittest == true;
-  }
-
   var model = {
 
     addCard: function (number, owner) {
@@ -29,6 +25,7 @@ var Model = (function () {
       cards.push(card);
       this.onAdd(card);
       this.saveCards();
+      // istanbul ignore if
       if (!isTest()) {
         this.fetchCardBalance(card);
       }
@@ -80,6 +77,7 @@ var Model = (function () {
           var xhr_csrf = new XMLHttpRequest();
           xhr_csrf.addEventListener('readystatechange', function () {
             if (xhr_csrf.readyState === 4) {
+              // istanbul ignore else
               if (xhr_csrf.status === 200) {
                 var response = new DOMParser().parseFromString(xhr_csrf.responseText, 'text/html');
                 var csrf = encodeURIComponent(response.getElementById('csrftoken').value);
@@ -99,8 +97,10 @@ var Model = (function () {
           var xhr_card = new XMLHttpRequest();
           xhr_card.addEventListener('readystatechange', function () {
             if (xhr_card.readyState === 4) {
+              // istanbul ignore else
               if (xhr_card.status === 200) {
                 var json = JSON.parse(xhr_card.responseText).result;
+                // istanbul ignore else
                 if (json.balance != null) {
                   resolve(json.balance / 100.0);
                 } else {
@@ -125,9 +125,12 @@ var Model = (function () {
           model.saveCards();
           model.saveDate();
         });
-      }).catch(function (error) {
-        model.onBalanceError(card, error);
-      });
+      }).catch(
+        // istanbul ignore next
+        function (error) {
+          model.onBalanceError(card, error);
+        }
+      );
     },
 
     simulateHuman: function () {
@@ -145,22 +148,23 @@ var Model = (function () {
     },
 
     loadCards: function () {
-      if (!isTest()) {
-        chrome.storage.sync.get('cards', function (data) {
-          if (data.cards && data.cards.length) {
-            cards = data.cards;
-            cards.forEach(function (card) {
-              model.onAdd(card);
-              model.onBalanceLoading(card);
-            });
+      chrome.storage.sync.get('cards', function (data) {
+        if (data.cards && data.cards.length) {
+          cards = data.cards;
+          cards.forEach(function (card) {
+            model.onAdd(card);
+            model.onBalanceLoading(card);
+          });
+          // istanbul ignore if
+          if (!isTest()) {
             model.simulateHuman().then(function () {
               cards.forEach(function (card) {
                 model.fetchCardBalance(card);
               });
             });
           }
-        });
-      }
+        }
+      });
     },
 
     saveCards: function () {
@@ -196,19 +200,19 @@ var Model = (function () {
       return datetime;
     },
 
-    onAdd: function (card) {
+    onAdd: /* istanbul ignore next */ function (card) {
       // Fired when a new card is added.
     },
 
-    onBalanceUpdate: function (card) {
+    onBalanceUpdate: /* istanbul ignore next */ function (card) {
       // Fired when a card balance is updated.
     },
 
-    onBalanceLoading: function (card) {
+    onBalanceLoading: /* istanbul ignore next */ function (card) {
       // Fired when a card balance is loading.
     },
 
-    onBalanceError: function (card) {
+    onBalanceError: /* istanbul ignore next */ function (card) {
       // Fired on card balance fetch error.
     }
   };

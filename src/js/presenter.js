@@ -1,3 +1,7 @@
+function isTest() {
+  return typeof unittest !== 'undefined' && unittest == true;
+}
+
 (function () {
 
   Model.onAdd = function (card) {
@@ -41,7 +45,9 @@
     Model.swapCards(pan1, pan2);
   };
 
-  Model.loadCards();
-  Model.loadDate();
+  if (!isTest()) {
+    Model.loadCards();
+    Model.loadDate();
+  }
 
 }());

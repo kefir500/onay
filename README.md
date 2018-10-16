@@ -1,5 +1,6 @@
-[![Build Status](https://travis-ci.org/kefir500/onay.svg?branch=master)](https://travis-ci.org/kefir500/onay)
-[![Maintenance](https://img.shields.io/maintenance/no/2018.svg)]()
+**WARNING: This project is not maintained anymore.**
+
+[![Maintenance](https://img.shields.io/maintenance/no/2018.svg)](https://github.com/kefir500/onay)
 
 ### Onay *(Google Chrome Extension)*
 
